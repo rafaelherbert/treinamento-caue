@@ -20,7 +20,9 @@
     "@pnp/sp": "^2.9.0",
     "office-ui-fabric-react": "6.214.0",
     "react": "16.8.5",
-    "react-dom": "16.8.5"
+    "react-dom": "16.8.5",
+    "react-icons": "^4.3.1",
+    "styled-components": "^5.3.1"
   },
   "devDependencies": {
     "@types/react": "16.8.8",

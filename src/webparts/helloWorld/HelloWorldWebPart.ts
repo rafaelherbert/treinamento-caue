@@ -8,8 +8,8 @@ import {
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 
 import * as strings from 'HelloWorldWebPartStrings';
-import HelloWorld from './components/HelloWorld';
-import { IHelloWorldProps } from './components/IHelloWorldProps';
+import HelloWorld from './components/Tasklist';
+import { sp } from "@pnp/sp/presets/all";
 
 export interface IHelloWorldWebPartProps {
   description: string;
@@ -17,8 +17,20 @@ export interface IHelloWorldWebPartProps {
 
 export default class HelloWorldWebPart extends BaseClientSideWebPart<IHelloWorldWebPartProps> {
 
+  protected onInit(): Promise<void> {
+
+    return super.onInit().then(_ => {
+
+      // other init code may be present
+
+      sp.setup({
+        spfxContext: this.context
+      });
+    });
+  }
+
   public render(): void {
-    const element: React.ReactElement<IHelloWorldProps> = React.createElement(
+    const element: React.ReactElement = React.createElement(
       HelloWorld,
       {
         description: this.properties.description
@@ -32,6 +44,7 @@ export default class HelloWorldWebPart extends BaseClientSideWebPart<IHelloWorld
     ReactDom.unmountComponentAtNode(this.domElement);
   }
 
+  // @ts-ignore
   protected get dataVersion(): Version {
     return Version.parse('1.0');
   }
