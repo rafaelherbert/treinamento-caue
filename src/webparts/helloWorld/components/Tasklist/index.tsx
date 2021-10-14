@@ -44,9 +44,7 @@ const Tasklist = ({ context }: TasklistProps) => {
         .update({
           Done: !task.Done
         });
-    } catch (err) {
-      console.log(err);
-    } finally {
+
       setTasks(prevState => (
         prevState.map(i => i.Id === task.Id ? {
           ...task,
@@ -58,6 +56,8 @@ const Tasklist = ({ context }: TasklistProps) => {
         ...expandedTask,
         Done: !expandedTask.Done
       });
+    } catch (err) {
+      console.log(err);
     }
   }
 
@@ -75,14 +75,14 @@ const Tasklist = ({ context }: TasklistProps) => {
       await sp.web.lists.getByTitle("Tarefas")
         .items.getById(updatedTask.Id)
         .update(updatedTask);
-    } catch (err) {
-      console.log(err);
-    } finally {
+
       setTasks(prevState => (
         prevState.map(i => i.Id === updatedTask.Id ? updatedTask : i)
       ));
 
       setExpandedTask(updatedTask);
+    } catch (err) {
+      console.log(err);
     }
   }
 
@@ -92,12 +92,12 @@ const Tasklist = ({ context }: TasklistProps) => {
         .items.getById(task.Id)
         .delete();
 
-    } catch (err) {
-      console.log(err);
-    } finally {
       setTasks(prevState =>
         prevState.filter(i => i.Id !== task.Id)
       );
+
+    } catch (err) {
+      console.log(err);
     }
   }
 
