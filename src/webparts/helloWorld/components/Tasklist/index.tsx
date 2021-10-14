@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { AiOutlinePlus } from 'react-icons/ai';
+import { AiOutlinePlus, AiOutlineEye, AiOutlineDelete, AiOutlineEdit } from 'react-icons/ai';
 import { useEffect, useState } from 'react';
 import * as S from './style';
 
@@ -8,18 +8,16 @@ import "@pnp/sp/lists";
 import "@pnp/sp/items";
 import { sp } from '@pnp/sp/presets/all';
 import { AddTask } from '../AddTask';
+import { ITask } from '../../types/Interface';
+import { Task } from '../Task';
+import { GlobalStyle } from '../../styles/global';
 
-interface ITask {
-  Id: number;
-  Title: string;
-  Done: boolean;
-  Description: string;
-}
-
-const HelloWorld = () => {
+const Tasklist = () => {
   const [tasks, setTasks] = useState<ITask[]>([]);
   const [expandedTask, setExpandedTask] = useState<ITask>({} as ITask);
   const [showAddTask, setShowAddTask] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
+  const [editMode, setEditMode] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -40,7 +38,6 @@ const HelloWorld = () => {
     } catch (err) {
       console.log(err);
     } finally {
-
       setTasks(prevState => (
         prevState.map(i => i.Id === task.Id ? {
           ...task,
@@ -48,6 +45,10 @@ const HelloWorld = () => {
         } : i)
       ));
 
+      setExpandedTask({
+        ...expandedTask,
+        Done: !expandedTask.Done
+      });
     }
   }
 
@@ -56,14 +57,35 @@ const HelloWorld = () => {
   }
 
   const handleExpandTask = (task: ITask) => {
-    expandedTask === task
-      ? setExpandedTask({} as ITask)
-      : setExpandedTask(task);
+    setExpandedTask(task);
+    setShowDetails(true);
+  }
+
+  const handleDeleteTask = async (task: ITask) => {
+    try {
+      await sp.web.lists.getByTitle("Tarefas")
+        .items.getById(task.Id)
+        .delete();
+
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setTasks(prevState =>
+        prevState.filter(i => i.Id !== task.Id)
+      );
+    }
   }
 
   return (
     <S.Container>
-      <h2>Lista de tarefass</h2>
+      <GlobalStyle />
+      <S.TasklistTitleContainer>
+        <h2>Lista de tarefas</h2>
+
+        <S.AddTaskBtn onClick={handleToggleAddTask}>
+          <AiOutlinePlus />
+        </S.AddTaskBtn>
+      </S.TasklistTitleContainer>
 
       <S.ContainerTasks>
 
@@ -71,24 +93,31 @@ const HelloWorld = () => {
           return (
             <S.Task>
 
-              <S.Title>
-                <input
-                  type="checkbox"
+              <S.TitleContainer>
+                <S.Checkbox
                   checked={task.Done}
                   onClick={() => handleToggleDone(task)}
                 />
-                <p
+                <S.TaskTitle
                   onClick={() => handleExpandTask(task)}
                 >
                   {task.Title}
-                </p>
-              </S.Title>
+                </S.TaskTitle>
+              </S.TitleContainer>
 
-              <S.Description
-                show={task === expandedTask}
-              >
-                {task.Description}
-              </S.Description>
+              <S.TaskOptionsContainer>
+                <S.TaskOption>
+                  <AiOutlineEye onClick={() => handleExpandTask(task)} />
+                </S.TaskOption>
+
+                <S.TaskOption>
+                  <AiOutlineEdit />
+                </S.TaskOption>
+
+                <S.TaskOption>
+                  <AiOutlineDelete onClick={() => handleDeleteTask(task)} />
+                </S.TaskOption>
+              </S.TaskOptionsContainer>
 
             </S.Task>
           )
@@ -96,13 +125,18 @@ const HelloWorld = () => {
 
       </S.ContainerTasks>
 
-      <S.AddTaskBtn onClick={handleToggleAddTask}>
-        <AiOutlinePlus />
-      </S.AddTaskBtn>
 
       <AddTask show={showAddTask} />
+      <Task
+        show={showDetails}
+        task={expandedTask}
+        close={() => setShowDetails(false)}
+        edit={editMode}
+        setEditMode={(v: boolean) => setEditMode(v)}
+        toggleDone={(t: ITask) => handleToggleDone(t)}
+      />
     </S.Container>
   );
 }
 
-export default HelloWorld;
+export default Tasklist;

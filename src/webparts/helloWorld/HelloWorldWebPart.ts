@@ -8,7 +8,7 @@ import {
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 
 import * as strings from 'HelloWorldWebPartStrings';
-import HelloWorld from './components/Tasklist';
+import Tasklist from './components/Tasklist';
 import { sp } from "@pnp/sp/presets/all";
 
 export interface IHelloWorldWebPartProps {
@@ -31,7 +31,7 @@ export default class HelloWorldWebPart extends BaseClientSideWebPart<IHelloWorld
 
   public render(): void {
     const element: React.ReactElement = React.createElement(
-      HelloWorld,
+      Tasklist,
       {
         description: this.properties.description
       }
