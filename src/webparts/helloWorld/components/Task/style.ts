@@ -8,6 +8,10 @@ interface CheckboxProps {
   checked: boolean;
 }
 
+interface ButtonProps {
+  light?: boolean;
+}
+
 export const Container = styled.div<ContainerProps>`
   position: fixed;
   display: flex;
@@ -40,6 +44,10 @@ export const Wrapper = styled.div`
 `;
 
 export const Close = styled.div`
+  position: absolute;
+  right: 0.7rem;
+  top: 0.7rem;
+  margin-left: 1rem;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -47,7 +55,7 @@ export const Close = styled.div`
   border: 0px;
   background-color: #313639;
   color: white;
-  font-size: 1rem;
+  font-size: 0.8rem;
   cursor: pointer;
   padding: 0.5rem;
   z-index: 10;
@@ -71,8 +79,8 @@ export const TitleContainer = styled.div`
 export const Checkbox = styled.div<CheckboxProps>`
   border:1px solid #313639;
   border-radius: 50%;
-  height: 1.5rem;
-  width: 1.5rem;
+  height: 1.2rem;
+  width: 1.2rem;
   cursor: pointer;
   margin-right: 0.5rem;
   position: relative;
@@ -120,7 +128,7 @@ export const Description = styled.div`
   margin-bottom: 2rem;
 `;
 
-export const Button = styled.button`
+export const Button = styled.button<ButtonProps>`
   cursor: pointer;
   padding: 0.4rem 1.5rem;
   background-color: #313639;
@@ -137,6 +145,12 @@ export const Button = styled.button`
     transition: none;
     box-shadow: none;
   }
+
+  ${props => props.light && css`
+    background-color: white;
+    color: #313639;
+    border: 1px solid #313639;
+  `}
 `;
 
 export const ContentContainer = styled.div`
@@ -144,7 +158,10 @@ export const ContentContainer = styled.div`
 `;
 
 
-export const ButtonsContainer = styled.div``;
+export const ButtonsContainer = styled.div`
+  display: flex;
+  gap: 0.5rem;
+`;
 
 export const CheckboxWrapper = styled.div`
   height: 2rem;
@@ -156,4 +173,21 @@ export const CheckboxWrapper = styled.div`
 
 export const TextContentContainer = styled.div`
   width: 100%;
+`;
+
+export const TaskTitleEdit = styled.input`
+  padding: 0;
+  width: 100%;
+  border: none;
+  font-size: 1.3rem;
+  font-weight: bold;
+  border-bottom: 1px solid #313639;
+`;
+
+export const TaskDescriptionEdit = styled.textarea`
+  margin-top: 1rem;
+  color: #313639;
+  margin-bottom: 2rem;
+  width: 100%;
+  resize: vertical;
 `;

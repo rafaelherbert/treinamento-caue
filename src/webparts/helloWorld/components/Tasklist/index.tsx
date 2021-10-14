@@ -8,9 +8,10 @@ import "@pnp/sp/lists";
 import "@pnp/sp/items";
 import { sp } from '@pnp/sp/presets/all';
 import { AddTask } from '../AddTask';
-import { ITask } from '../../types/Interface';
+import { ICreateTask, ITask } from '../../types/Interface';
 import { Task } from '../Task';
 import { GlobalStyle } from '../../styles/global';
+import { sleep } from '../../utils/sleep';
 
 const Tasklist = () => {
   const [tasks, setTasks] = useState<ITask[]>([]);
@@ -61,6 +62,22 @@ const Tasklist = () => {
     setShowDetails(true);
   }
 
+  const handleUpdateTask = async (updatedTask: ITask) => {
+    try {
+      await sp.web.lists.getByTitle("Tarefas")
+        .items.getById(updatedTask.Id)
+        .update(updatedTask);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setTasks(prevState => (
+        prevState.map(i => i.Id === updatedTask.Id ? updatedTask : i)
+      ));
+
+      setExpandedTask(updatedTask);
+    }
+  }
+
   const handleDeleteTask = async (task: ITask) => {
     try {
       await sp.web.lists.getByTitle("Tarefas")
@@ -73,6 +90,45 @@ const Tasklist = () => {
       setTasks(prevState =>
         prevState.filter(i => i.Id !== task.Id)
       );
+    }
+  }
+
+  const handleCloseTaskModal = async () => {
+    setShowDetails(false);
+    await sleep(1000);
+    setEditMode(false);
+  }
+
+  const handleCloseAddTaskModal = async () => {
+    setShowAddTask(false);
+    await sleep(1000);
+  }
+
+  // const handleOpenForEdit = (task: ITask) => {
+  //   setExpandedTask(task);
+  //   setEditMode(true);
+  //   setShowDetails(true);
+  // }
+
+  const handleAddTask = async (task: ICreateTask) => {
+    try {
+      const { data } = await sp.web.lists.getByTitle("Tarefas")
+        .items.add({
+          Title: task.Title,
+          Description: task.Description,
+          Done: false
+        });
+
+      setTasks(prevState => [
+        ...prevState, {
+          Id: data.Id,
+          Title: data.Title,
+          Description: data.Description,
+          Done: data.Done,
+        }
+      ]);
+    } catch (err) {
+      console.log(err);
     }
   }
 
@@ -110,9 +166,9 @@ const Tasklist = () => {
                   <AiOutlineEye onClick={() => handleExpandTask(task)} />
                 </S.TaskOption>
 
-                <S.TaskOption>
+                {/* <S.TaskOption onClick={() => handleOpenForEdit(task)}>
                   <AiOutlineEdit />
-                </S.TaskOption>
+                </S.TaskOption> */}
 
                 <S.TaskOption>
                   <AiOutlineDelete onClick={() => handleDeleteTask(task)} />
@@ -126,14 +182,21 @@ const Tasklist = () => {
       </S.ContainerTasks>
 
 
-      <AddTask show={showAddTask} />
+      <AddTask
+        show={showAddTask}
+        close={handleCloseAddTaskModal}
+        addTask={(t: ITask) => handleAddTask(t)}
+      />
+
+
       <Task
         show={showDetails}
         task={expandedTask}
-        close={() => setShowDetails(false)}
+        close={handleCloseTaskModal}
         edit={editMode}
         setEditMode={(v: boolean) => setEditMode(v)}
         toggleDone={(t: ITask) => handleToggleDone(t)}
+        updateTask={handleUpdateTask}
       />
     </S.Container>
   );
