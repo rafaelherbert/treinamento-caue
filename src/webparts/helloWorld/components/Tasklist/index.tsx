@@ -6,19 +6,23 @@ import * as S from './style';
 import "@pnp/sp/webs";
 import "@pnp/sp/lists";
 import "@pnp/sp/items";
-import { sp } from '@pnp/sp/presets/all';
+import { PagedItemCollection, sp } from '@pnp/sp/presets/all';
 import { AddTask } from '../AddTask';
 import { ICreateTask, ITask } from '../../types/Interface';
 import { Task } from '../Task';
 import { GlobalStyle } from '../../styles/global';
 import { sleep } from '../../utils/sleep';
+import { Modal } from '../Modal';
+import { WebPartContext } from '@microsoft/sp-webpart-base';
+import { TasklistProps } from '../../HelloWorldWebPart';
 
-const Tasklist = () => {
+const Tasklist = ({ context }: TasklistProps) => {
   const [tasks, setTasks] = useState<ITask[]>([]);
   const [expandedTask, setExpandedTask] = useState<ITask>({} as ITask);
   const [showAddTask, setShowAddTask] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const [editMode, setEditMode] = useState(false);
+  const [taskToDelete, setTaskToDelete] = useState<ITask>();
 
   useEffect(() => {
     loadData();
@@ -26,6 +30,10 @@ const Tasklist = () => {
 
   const loadData = async () => {
     const items = await sp.web.lists.getByTitle("Tarefas").items.get<ITask[]>();
+    const page = await sp.web.lists.getByTitle("Tarefas").items.top(10)
+      .getPaged<PagedItemCollection<ITask[]>>();
+    console.log(page.results);
+    console.log(context.pageContext.legacyPageContext["userId"]);
     setTasks(items);
   };
 
@@ -198,6 +206,7 @@ const Tasklist = () => {
         toggleDone={(t: ITask) => handleToggleDone(t)}
         updateTask={handleUpdateTask}
       />
+
     </S.Container>
   );
 }

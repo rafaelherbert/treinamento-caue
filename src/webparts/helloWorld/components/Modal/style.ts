@@ -27,7 +27,7 @@ export const Container = styled.div<ContainerProps>`
 
 export const Wrapper = styled.div`
   background-color: white;
-  max-width: 600px;
+  max-width: 300px;
   width: 100%;
   border-radius: 1rem;
   position: relative;

@@ -1,8 +1,7 @@
 import * as React from 'react';
 import { useRef, useState } from 'react';
 import { AiOutlineClose } from 'react-icons/ai';
-import { ICreateTask, ITask } from '../../types/Interface';
-import { sleep } from '../../utils/sleep';
+import { ICreateTask } from '../../types/Interface';
 import * as S from './style';
 
 interface AddTaskProps {
@@ -97,8 +96,6 @@ export const AddTask = ({ show, close, addTask }: AddTaskProps) => {
           </S.TextContentContainer>
         </S.ContentContainer>
       </S.Wrapper>
-
-
     </S.Container>
   )
 }

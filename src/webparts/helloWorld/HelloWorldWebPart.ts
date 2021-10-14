@@ -5,17 +5,17 @@ import {
   IPropertyPaneConfiguration,
   PropertyPaneTextField
 } from '@microsoft/sp-property-pane';
-import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
+import { BaseClientSideWebPart, WebPartContext } from '@microsoft/sp-webpart-base';
 
 import * as strings from 'HelloWorldWebPartStrings';
 import Tasklist from './components/Tasklist';
 import { sp } from "@pnp/sp/presets/all";
 
-export interface IHelloWorldWebPartProps {
-  description: string;
+export interface TasklistProps {
+  context: WebPartContext;
 }
 
-export default class HelloWorldWebPart extends BaseClientSideWebPart<IHelloWorldWebPartProps> {
+export default class HelloWorldWebPart extends BaseClientSideWebPart<TasklistProps> {
 
   protected onInit(): Promise<void> {
 
@@ -33,7 +33,7 @@ export default class HelloWorldWebPart extends BaseClientSideWebPart<IHelloWorld
     const element: React.ReactElement = React.createElement(
       Tasklist,
       {
-        description: this.properties.description
+        context: this.context
       }
     );
 
