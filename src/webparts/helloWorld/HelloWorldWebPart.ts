@@ -5,22 +5,24 @@ import {
   IPropertyPaneConfiguration,
   PropertyPaneTextField
 } from '@microsoft/sp-property-pane';
-import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
+import { BaseClientSideWebPart, WebPartContext } from '@microsoft/sp-webpart-base';
 
 import * as strings from 'HelloWorldWebPartStrings';
-import HelloWorld from './components/HelloWorld';
-import { IHelloWorldProps } from './components/IHelloWorldProps';
+import Tasklist from './components/Tasklist';
 import { sp } from "@pnp/sp/presets/all";
 
-
-export interface IHelloWorldWebPartProps {
-  description: string;
+export interface TasklistProps {
+  context: WebPartContext;
 }
 
-export default class HelloWorldWebPart extends BaseClientSideWebPart<IHelloWorldWebPartProps> {
+export default class HelloWorldWebPart extends BaseClientSideWebPart<TasklistProps> {
 
   protected onInit(): Promise<void> {
+
     return super.onInit().then(_ => {
+
+      // other init code may be present
+
       sp.setup({
         spfxContext: this.context
       });
@@ -28,10 +30,10 @@ export default class HelloWorldWebPart extends BaseClientSideWebPart<IHelloWorld
   }
 
   public render(): void {
-    const element: React.ReactElement<IHelloWorldProps> = React.createElement(
-      HelloWorld,
+    const element: React.ReactElement = React.createElement(
+      Tasklist,
       {
-        description: this.properties.description
+        context: this.context
       }
     );
 
@@ -42,6 +44,7 @@ export default class HelloWorldWebPart extends BaseClientSideWebPart<IHelloWorld
     ReactDom.unmountComponentAtNode(this.domElement);
   }
 
+  // @ts-ignore
   protected get dataVersion(): Version {
     return Version.parse('1.0');
   }
