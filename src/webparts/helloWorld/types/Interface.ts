@@ -4,3 +4,8 @@ export interface ITask {
   Done: boolean;
   Description: string;
 }
+
+export interface ICreateTask {
+  Title: string;
+  Description: string;
+}
