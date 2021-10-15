@@ -100,7 +100,6 @@ export const AddTaskBtn = styled.button`
   border-radius: 50%;
   border: 0;
   background-color: #313639;
-  height: fit-content;
   color: white;
   font-size: 1.5rem;
   cursor: pointer;

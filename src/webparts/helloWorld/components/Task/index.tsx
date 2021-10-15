@@ -99,7 +99,7 @@ export const Task = (
               />
               :
               <S.Description>
-                {task.Description}
+                {task.Description && task.Description.split('\n').map(str => <p>{str}</p>)}
               </S.Description>
             }
 

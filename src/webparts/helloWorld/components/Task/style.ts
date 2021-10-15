@@ -126,6 +126,10 @@ export const Description = styled.div`
   margin-top: 1rem;
   color: #313639;
   margin-bottom: 2rem;
+
+  p {
+    margin-top: 1ch;
+  }
 `;
 
 export const Button = styled.button<ButtonProps>`
@@ -185,6 +189,7 @@ export const TaskTitleEdit = styled.input`
 `;
 
 export const TaskDescriptionEdit = styled.textarea`
+  min-height: 10rem;
   margin-top: 1rem;
   color: #313639;
   margin-bottom: 2rem;

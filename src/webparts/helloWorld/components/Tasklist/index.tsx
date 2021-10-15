@@ -2,6 +2,7 @@ import * as React from 'react';
 import { AiOutlinePlus, AiOutlineEye, AiOutlineDelete } from 'react-icons/ai';
 import { useEffect, useState } from 'react';
 import * as S from './style';
+import faker from 'faker';
 
 import "@pnp/sp/webs";
 import "@pnp/sp/lists";
@@ -63,8 +64,9 @@ const Tasklist = ({ context }: TasklistProps) => {
     }
   }
 
-  const handleToggleAddTask = () => {
-    setShowAddTask(prevState => !prevState);
+  const handleToggleAddTask = async () => {
+    // setShowAddTask(prevState => !prevState);
+    mockTasks(50);
   }
 
   const handleExpandTask = (task: ITask) => {
@@ -120,6 +122,7 @@ const Tasklist = ({ context }: TasklistProps) => {
   //   setShowDetails(true);
   // }
 
+
   const handleAddTask = async (task: ICreateTask) => {
     try {
       const { data }: { data: ITask } = await sp.web.lists.getByTitle("Tarefas")
@@ -140,6 +143,19 @@ const Tasklist = ({ context }: TasklistProps) => {
       ]);
     } catch (err) {
       console.log(err);
+    }
+  }
+
+  const getRandom = (max: number, min: number) => {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  const mockTasks = async (quantity: number) => {
+    for (let i = 0; i < quantity; i++) {
+      handleAddTask({
+        Title: faker.lorem.words(getRandom(10, 1)),
+        Description: faker.lorem.paragraphs(getRandom(3, 1))
+      });
     }
   }
 
