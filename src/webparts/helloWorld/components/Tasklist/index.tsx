@@ -26,22 +26,24 @@ const Tasklist = ({ context }: TasklistProps) => {
   const [taskToDelete, setTaskToDelete] = useState<ITask>();
   const [page, setPage] = useState<PagedItemCollection<ITask[]>>({} as PagedItemCollection<ITask[]>);
   const [isFirstPage, setIsFirstPage] = useState(true);
+  const [listingDoneTasks, setListingDoneTasks] = useState(false);
 
   useEffect(() => {
     loadFirstPage();
   }, []);
 
-  const loadFirstPage = async () => {
+  const loadFirstPage = async (fetchDone = false) => {
     const currentUserId = context.pageContext.legacyPageContext["userId"];
 
     const firstPage: PagedItemCollection<ITask[]> = await sp.web.lists.getByTitle("Tarefas")
       .items.top(ITEMS_PER_PAGE)
-      .filter(`AuthorId eq ${currentUserId} and Done eq false`)
+      .filter(`AuthorId eq ${currentUserId} and Done eq ${+fetchDone}`)
       .getPaged();
 
     setTasks(firstPage.results);
     setPage(firstPage);
     setIsFirstPage(true);
+    setListingDoneTasks(fetchDone);
   };
 
   const loadNextPage = async () => {
@@ -171,6 +173,14 @@ const Tasklist = ({ context }: TasklistProps) => {
     }
   }
 
+  const handleLoadDoneTasks = () => {
+    loadFirstPage(true);
+  }
+
+  const handleLoadPendingTasks = () => {
+    loadFirstPage();
+  }
+
   return (
     <S.Container>
       <GlobalStyle />
@@ -223,9 +233,16 @@ const Tasklist = ({ context }: TasklistProps) => {
       <S.Footer>
 
         <S.LinkWrapper>
-          <S.Link>
-            Visualizar tarefas finalizadas
-          </S.Link>
+          {listingDoneTasks ? (
+            <S.Link onClick={handleLoadPendingTasks}>
+              Visualizar tarefas pendentes
+            </S.Link>
+          ) : (
+            <S.Link onClick={handleLoadDoneTasks}>
+              Visualizar tarefas finalizadas
+            </S.Link>
+          )}
+
         </S.LinkWrapper>
 
 
@@ -233,7 +250,7 @@ const Tasklist = ({ context }: TasklistProps) => {
           isFirstPage={isFirstPage}
           hasNext={page.hasNext}
           loadNextPage={loadNextPage}
-          loadFirstPage={loadFirstPage}
+          loadFirstPage={() => loadFirstPage()}
         />
 
       </S.Footer>

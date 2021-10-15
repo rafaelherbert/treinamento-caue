@@ -154,4 +154,10 @@ export const LinkWrapper = styled.div`
   flex-grow: 1;
 `;
 
-export const Link = styled.button``;
+export const Link = styled.button`
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  font-size: 1rem;
+  text-decoration: underline;
+`;
