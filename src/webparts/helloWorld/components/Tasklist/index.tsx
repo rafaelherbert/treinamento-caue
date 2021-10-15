@@ -31,10 +31,12 @@ const Tasklist = ({ context }: TasklistProps) => {
     const currentUserId = context.pageContext.legacyPageContext["userId"];
 
     const items = await sp.web.lists.getByTitle("Tarefas")
-      .items.get<ITask[]>()
-      .then(items => items.filter(i => i.AuthorId === currentUserId));
+      .items
+      .filter(`AuthorId eq ${currentUserId}`)
+      .get<ITask[]>();
 
     const page = await sp.web.lists.getByTitle("Tarefas").items.top(10)
+      .filter(`AuthorId eq ${currentUserId}`)
       .getPaged<PagedItemCollection<ITask[]>>();
 
     setTasks(items);
@@ -65,8 +67,8 @@ const Tasklist = ({ context }: TasklistProps) => {
   }
 
   const handleToggleAddTask = async () => {
-    // setShowAddTask(prevState => !prevState);
-    mockTasks(50);
+    setShowAddTask(prevState => !prevState);
+    // mockTasks(50);
   }
 
   const handleExpandTask = (task: ITask) => {
