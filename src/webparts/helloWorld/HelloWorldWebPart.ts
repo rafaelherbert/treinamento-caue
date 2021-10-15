@@ -1,3 +1,4 @@
+import { Description } from './components/Tasklist/style';
 import * as React from 'react';
 import * as ReactDom from 'react-dom';
 import { Version } from '@microsoft/sp-core-library';
@@ -12,6 +13,7 @@ import Tasklist from './components/Tasklist';
 import { sp } from "@pnp/sp/presets/all";
 
 export interface TasklistProps {
+  description: string;
   context: WebPartContext;
 }
 
@@ -33,6 +35,7 @@ export default class HelloWorldWebPart extends BaseClientSideWebPart<TasklistPro
     const element: React.ReactElement = React.createElement(
       Tasklist,
       {
+        description: this.properties.description,
         context: this.context
       }
     );

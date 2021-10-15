@@ -17,7 +17,7 @@ import { TasklistProps } from '../../HelloWorldWebPart';
 import { Pagination } from '../Pagination';
 import { ITEMS_PER_PAGE } from '../../constants';
 
-const Tasklist = ({ context }: TasklistProps) => {
+const Tasklist = ({ description, context }: TasklistProps) => {
   const [tasks, setTasks] = useState<ITask[]>([]);
   const [expandedTask, setExpandedTask] = useState<ITask>({} as ITask);
   const [showAddTask, setShowAddTask] = useState(false);
@@ -185,7 +185,7 @@ const Tasklist = ({ context }: TasklistProps) => {
     <S.Container>
       <GlobalStyle />
       <S.TasklistTitleContainer>
-        <h2>Lista de tarefas</h2>
+        <h2>{description}</h2>
 
         <S.AddTaskBtn onClick={handleToggleAddTask}>
           <AiOutlinePlus />
