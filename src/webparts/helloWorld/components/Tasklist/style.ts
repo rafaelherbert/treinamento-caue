@@ -144,3 +144,14 @@ export const TasklistTitleContainer = styled.div`
     font-size: 1.5rem;
   }
 `;
+
+export const Footer = styled.div`
+  display: flex;
+  margin-top: 1rem;
+`;
+
+export const LinkWrapper = styled.div`
+  flex-grow: 1;
+`;
+
+export const Link = styled.button``;

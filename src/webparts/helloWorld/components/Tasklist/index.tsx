@@ -14,6 +14,8 @@ import { Task } from '../Task';
 import { GlobalStyle } from '../../styles/global';
 import { sleep } from '../../utils/sleep';
 import { TasklistProps } from '../../HelloWorldWebPart';
+import { Pagination } from '../Pagination';
+import { ITEMS_PER_PAGE } from '../../constants';
 
 const Tasklist = ({ context }: TasklistProps) => {
   const [tasks, setTasks] = useState<ITask[]>([]);
@@ -22,25 +24,32 @@ const Tasklist = ({ context }: TasklistProps) => {
   const [showDetails, setShowDetails] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState<ITask>();
+  const [page, setPage] = useState<PagedItemCollection<ITask[]>>({} as PagedItemCollection<ITask[]>);
+  const [isFirstPage, setIsFirstPage] = useState(true);
 
   useEffect(() => {
-    loadData();
+    loadFirstPage();
   }, []);
 
-  const loadData = async () => {
+  const loadFirstPage = async () => {
     const currentUserId = context.pageContext.legacyPageContext["userId"];
 
-    const items = await sp.web.lists.getByTitle("Tarefas")
-      .items
-      .filter(`AuthorId eq ${currentUserId}`)
-      .get<ITask[]>();
+    const firstPage: PagedItemCollection<ITask[]> = await sp.web.lists.getByTitle("Tarefas")
+      .items.top(ITEMS_PER_PAGE)
+      .filter(`AuthorId eq ${currentUserId} and Done eq false`)
+      .getPaged();
 
-    const page = await sp.web.lists.getByTitle("Tarefas").items.top(10)
-      .filter(`AuthorId eq ${currentUserId}`)
-      .getPaged<PagedItemCollection<ITask[]>>();
-
-    setTasks(items);
+    setTasks(firstPage.results);
+    setPage(firstPage);
+    setIsFirstPage(true);
   };
+
+  const loadNextPage = async () => {
+    const nextPage = await page.getNext();
+    setTasks(nextPage.results);
+    setPage(nextPage);
+    setIsFirstPage(false);
+  }
 
   const handleToggleDone = async (task: ITask) => {
     try {
@@ -131,7 +140,7 @@ const Tasklist = ({ context }: TasklistProps) => {
         .items.add({
           Title: task.Title,
           Description: task.Description,
-          Done: false
+          Done: task.Done
         });
 
       setTasks(prevState => [
@@ -140,7 +149,7 @@ const Tasklist = ({ context }: TasklistProps) => {
           AuthorId: data.AuthorId,
           Title: data.Title,
           Description: data.Description,
-          Done: data.Done,
+          Done: !!data.Done,
         }
       ]);
     } catch (err) {
@@ -156,7 +165,8 @@ const Tasklist = ({ context }: TasklistProps) => {
     for (let i = 0; i < quantity; i++) {
       handleAddTask({
         Title: faker.lorem.words(getRandom(10, 1)),
-        Description: faker.lorem.paragraphs(getRandom(3, 1))
+        Description: faker.lorem.paragraphs(getRandom(3, 1)),
+        Done: getRandom(0, 1) === 1
       });
     }
   }
@@ -209,6 +219,24 @@ const Tasklist = ({ context }: TasklistProps) => {
         })}
 
       </S.ContainerTasks>
+
+      <S.Footer>
+
+        <S.LinkWrapper>
+          <S.Link>
+            Visualizar tarefas finalizadas
+          </S.Link>
+        </S.LinkWrapper>
+
+
+        <Pagination
+          isFirstPage={isFirstPage}
+          hasNext={page.hasNext}
+          loadNextPage={loadNextPage}
+          loadFirstPage={loadFirstPage}
+        />
+
+      </S.Footer>
 
 
       <AddTask

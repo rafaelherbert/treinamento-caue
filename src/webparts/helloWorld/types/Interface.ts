@@ -9,4 +9,5 @@ export interface ITask {
 export interface ICreateTask {
   Title: string;
   Description: string;
+  Done?: boolean;
 }
