@@ -15,9 +15,11 @@ import { GlobalStyle } from '../../styles/global';
 import { sleep } from '../../utils/sleep';
 import { TasklistProps } from '../../HelloWorldWebPart';
 import { Pagination } from '../Pagination';
-import { ITEMS_PER_PAGE } from '../../constants';
+// import { ITEMS_PER_PAGE } from '../../constants';
 
-const Tasklist = ({ description, context }: TasklistProps) => {
+
+const Tasklist = ({ itemsPerPage, description, context }: TasklistProps) => {
+  const ITEMS_PER_PAGE = itemsPerPage;
   const [tasks, setTasks] = useState<ITask[]>([]);
   const [expandedTask, setExpandedTask] = useState<ITask>({} as ITask);
   const [showAddTask, setShowAddTask] = useState(false);

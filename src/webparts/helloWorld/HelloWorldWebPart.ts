@@ -4,6 +4,7 @@ import * as ReactDom from 'react-dom';
 import { Version } from '@microsoft/sp-core-library';
 import {
   IPropertyPaneConfiguration,
+  PropertyPaneSlider,
   PropertyPaneTextField
 } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart, WebPartContext } from '@microsoft/sp-webpart-base';
@@ -13,6 +14,7 @@ import Tasklist from './components/Tasklist';
 import { sp } from "@pnp/sp/presets/all";
 
 export interface TasklistProps {
+  itemsPerPage: number;
   description: string;
   context: WebPartContext;
 }
@@ -35,6 +37,7 @@ export default class HelloWorldWebPart extends BaseClientSideWebPart<TasklistPro
     const element: React.ReactElement = React.createElement(
       Tasklist,
       {
+        itemsPerPage: this.properties.itemsPerPage,
         description: this.properties.description,
         context: this.context
       }
@@ -65,6 +68,13 @@ export default class HelloWorldWebPart extends BaseClientSideWebPart<TasklistPro
               groupFields: [
                 PropertyPaneTextField('description', {
                   label: strings.DescriptionFieldLabel
+                }),
+                PropertyPaneSlider('itemsPerPage', {
+                  label: 'Itens por pagina',
+                  min: 5,
+                  max: 30,
+                  value: 10,
+                  showValue: true
                 })
               ]
             }
