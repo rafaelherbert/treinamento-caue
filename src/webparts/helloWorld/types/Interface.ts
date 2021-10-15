@@ -3,6 +3,7 @@ export interface ITask {
   Title: string;
   Done: boolean;
   Description: string;
+  AuthorId: number;
 }
 
 export interface ICreateTask {

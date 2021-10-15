@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { AiOutlinePlus, AiOutlineEye, AiOutlineDelete, AiOutlineEdit } from 'react-icons/ai';
+import { AiOutlinePlus, AiOutlineEye, AiOutlineDelete } from 'react-icons/ai';
 import { useEffect, useState } from 'react';
 import * as S from './style';
 
@@ -12,8 +12,6 @@ import { ICreateTask, ITask } from '../../types/Interface';
 import { Task } from '../Task';
 import { GlobalStyle } from '../../styles/global';
 import { sleep } from '../../utils/sleep';
-import { Modal } from '../Modal';
-import { WebPartContext } from '@microsoft/sp-webpart-base';
 import { TasklistProps } from '../../HelloWorldWebPart';
 
 const Tasklist = ({ context }: TasklistProps) => {
@@ -29,11 +27,15 @@ const Tasklist = ({ context }: TasklistProps) => {
   }, []);
 
   const loadData = async () => {
-    const items = await sp.web.lists.getByTitle("Tarefas").items.get<ITask[]>();
+    const currentUserId = context.pageContext.legacyPageContext["userId"];
+
+    const items = await sp.web.lists.getByTitle("Tarefas")
+      .items.get<ITask[]>()
+      .then(items => items.filter(i => i.AuthorId === currentUserId));
+
     const page = await sp.web.lists.getByTitle("Tarefas").items.top(10)
       .getPaged<PagedItemCollection<ITask[]>>();
-    console.log(page.results);
-    console.log(context.pageContext.legacyPageContext["userId"]);
+
     setTasks(items);
   };
 
@@ -120,7 +122,7 @@ const Tasklist = ({ context }: TasklistProps) => {
 
   const handleAddTask = async (task: ICreateTask) => {
     try {
-      const { data } = await sp.web.lists.getByTitle("Tarefas")
+      const { data }: { data: ITask } = await sp.web.lists.getByTitle("Tarefas")
         .items.add({
           Title: task.Title,
           Description: task.Description,
@@ -130,6 +132,7 @@ const Tasklist = ({ context }: TasklistProps) => {
       setTasks(prevState => [
         ...prevState, {
           Id: data.Id,
+          AuthorId: data.AuthorId,
           Title: data.Title,
           Description: data.Description,
           Done: data.Done,
